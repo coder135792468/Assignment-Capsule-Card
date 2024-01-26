@@ -1,6 +1,7 @@
 "use client";
 
 import { SearchBarContainer } from "@/components/index";
+import { Landing } from "@/features/landing-page/landing";
 
 export default function Home() {
   const handleSubmit = async (data: any) => {
@@ -8,6 +9,7 @@ export default function Home() {
   };
   return (
     <div>
+      <Landing />
       <SearchBarContainer
         show={true}
         formClass="grid m-5 grid-cols-1 sm:grid-cols-2"
