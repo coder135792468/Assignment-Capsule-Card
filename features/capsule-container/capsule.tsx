@@ -1,20 +1,20 @@
 "use client";
 import { useEffect, useState } from "react";
-import { SearchBarContainer, CardView, Button } from "@/components/index";
+import { SearchBarContainer, CardView } from "@/components/index";
 import {
   useGetAllCapsulesQuery,
   addCapsule,
   useAppDispatch,
 } from "@/store/index";
+import { PaginationButton } from "../index";
 
 export const Capsule = ({ ...props }) => {
-  const CAPSULE_SIZE = 1;
+  const CAPSULE_SIZE = 2;
   const [search, setSearch] = useState<any>({
-    limit: props.searchParams.limit || CAPSULE_SIZE,
-    offset: parseInt(props.searchParams.page) * 2 || 0,
-    type: props.searchParams.search || "",
+    limit: CAPSULE_SIZE,
+    offset: 0,
   });
-
+  const [page, setPage] = useState<number>(0);
   const {
     data = [],
     isLoading,
@@ -24,24 +24,17 @@ export const Capsule = ({ ...props }) => {
   const dispath = useAppDispatch();
 
   const handleSubmit = async (data: any) => {
-    const jsonData: any = {};
-    if (data.search.length > 0) {
-      jsonData.type = data.search;
-    }
-    jsonData.status = data.status;
-    if (data.original_launch.length > 0) {
-      jsonData.original_launch = data.original_launch;
-    }
-    setSearch({ ...search, ...jsonData, offset: 0 });
-    await refetch();
     setSearch({
-      limit: props.searchParams.limit || CAPSULE_SIZE,
-      offset: parseInt(props.searchParams.page) * 2 || 0,
-      type: props.searchParams.search || "",
+      limit: CAPSULE_SIZE,
+      offset: 0,
+      status: data.status,
+      type: data.search,
+      original_launch: data.original_launch,
     });
+    await refetch();
+    setPage(0);
   };
 
-  console.log(data);
   useEffect(() => {
     dispath(addCapsule(data));
   }, [data]);
@@ -60,13 +53,28 @@ export const Capsule = ({ ...props }) => {
           <span className="font-bold">"{props.searchParams.search}"</span>
         </h1>
       )}
-      {isError && <h1>There is some error</h1>}
+      {isError && <h1 className="text-center">There is some error</h1>}
       {isLoading && <h1 className="text-center">Loading Data</h1>}
       <div className="w-[90%] mx-[5%] grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
         {data?.map((capsule: any) => (
           <CardView {...capsule} />
         ))}
       </div>
+
+      {data.length === 0 && !isLoading ? (
+        <h1 className="text-center">Capsule not found</h1>
+      ) : (
+        <PaginationButton
+          isLoading={isLoading}
+          page={page}
+          setPage={setPage}
+          refetch={refetch}
+          search={search}
+          setSearch={setSearch}
+          CAPSULE_SIZE={CAPSULE_SIZE}
+          pageLength={data.length}
+        />
+      )}
     </>
   );
 };

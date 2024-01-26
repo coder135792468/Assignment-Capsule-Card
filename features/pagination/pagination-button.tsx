@@ -1,38 +1,51 @@
 import React from "react";
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/index";
-import { generateQuery } from "../utils";
+import { Button } from "@/components/index";
 
-export const PaginationButton = ({ totalPages, ...props }: any) => {
-  const { page } = props.searchParams;
-  const nextPage = !page ? "2" : (parseInt(page) + 1).toString();
-  const prevPage = (parseInt(page) - 1).toString();
+export const PaginationButton = ({
+  isLoading,
+  page,
+  setPage,
+  refetch,
+  search,
+  setSearch,
+  CAPSULE_SIZE,
+  pageLength,
+}: any) => {
   return (
-    <Pagination className="my-5">
-      <PaginationContent>
-        {page && page !== "1" && (
-          <PaginationItem>
-            <PaginationPrevious
-              href={"/notes?" + generateQuery(props.searchParams, prevPage)}
-            />
-          </PaginationItem>
-        )}
-        <PaginationItem className="mx-5 text-gray-700">
-          {parseInt(page) || 1}/{totalPages}
-        </PaginationItem>
-        {(!page || parseInt(page) < totalPages) && (
-          <PaginationItem>
-            <PaginationNext
-              href={"/notes?" + generateQuery(props.searchParams, nextPage)}
-            />
-          </PaginationItem>
-        )}
-      </PaginationContent>
-    </Pagination>
+    !isLoading && (
+      <div className="flex justify-center items-center text-sm m-5">
+        <Button
+          onClick={() => {
+            setSearch({
+              ...search,
+              offset: (page - 1) * (CAPSULE_SIZE * 2),
+            });
+            setPage(page - 1);
+            refetch();
+          }}
+          className="mx-2"
+          disabled={page == 0}
+        >
+          Prev
+        </Button>
+        <p>
+          Page No:<strong>{page + 1}</strong>
+        </p>
+        <Button
+          onClick={() => {
+            setSearch({
+              ...search,
+              offset: (page + 1) * (CAPSULE_SIZE * 2),
+            });
+            setPage(page + 1);
+            refetch();
+          }}
+          disabled={pageLength < CAPSULE_SIZE * 2}
+          className="mx-2"
+        >
+          Next
+        </Button>
+      </div>
+    )
   );
 };

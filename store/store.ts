@@ -4,7 +4,7 @@ import { capsuleApi } from "./slices/capsuleApiSlice";
 
 export const store = configureStore({
   reducer: {
-    notes: capsuleSlice.reducer,
+    capsule: capsuleSlice.reducer,
     [capsuleApi.reducerPath]: capsuleApi.reducer,
   },
   middleware: (getDefaultMiddleware) =>
