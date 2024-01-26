@@ -1,33 +1,50 @@
 "use client";
 import { useEffect, useState } from "react";
-import { SearchBarContainer, CardView } from "@/components/index";
-// import { useGetAllNotesQuery, useAppDispatch, addNotes } from '../../store';
-// import Link from "next/link";
-import { useRouter } from "next/navigation";
-// import { PaginationButton } from "../pagination/pagination-button";
+import { SearchBarContainer, CardView, Button } from "@/components/index";
+import {
+  useGetAllCapsulesQuery,
+  addCapsule,
+  useAppDispatch,
+} from "@/store/index";
 
-export const Notes = ({ ...props }) => {
-  const router = useRouter();
+export const Capsule = ({ ...props }) => {
+  const CAPSULE_SIZE = 1;
   const [search, setSearch] = useState<any>({
-    size: props.searchParams.size || "3",
-    page: parseInt(props.searchParams.page) - 1 || "0",
-    search: props.searchParams.search || "",
+    limit: props.searchParams.limit || CAPSULE_SIZE,
+    offset: parseInt(props.searchParams.page) * 2 || 0,
+    type: props.searchParams.search || "",
   });
 
-  // const { data = [], isLoading, isError } = useGetAllNotesQuery(search);
-  // const dispath = useAppDispatch();
+  const {
+    data = [],
+    isLoading,
+    isError,
+    refetch,
+  } = useGetAllCapsulesQuery(search);
+  const dispath = useAppDispatch();
 
   const handleSubmit = async (data: any) => {
-    setSearch({ ...search, ...data, page: "0" });
-    // router.push(
-    //   `/notes${(data.search || data.status) && '?'}${
-    //     data.search && 'search='
-    //   }${data.search}${data.status && '&status='}${data.status}`
-    // );
+    const jsonData: any = {};
+    if (data.search.length > 0) {
+      jsonData.type = data.search;
+    }
+    jsonData.status = data.status;
+    if (data.original_launch.length > 0) {
+      jsonData.original_launch = data.original_launch;
+    }
+    setSearch({ ...search, ...jsonData, offset: 0 });
+    await refetch();
+    setSearch({
+      limit: props.searchParams.limit || CAPSULE_SIZE,
+      offset: parseInt(props.searchParams.page) * 2 || 0,
+      type: props.searchParams.search || "",
+    });
   };
-  // useEffect(() => {
-  //   dispath(addCapsules(data));
-  // }, [data]);
+
+  console.log(data);
+  useEffect(() => {
+    dispath(addCapsule(data));
+  }, [data]);
   return (
     <>
       <SearchBarContainer
@@ -43,19 +60,13 @@ export const Notes = ({ ...props }) => {
           <span className="font-bold">"{props.searchParams.search}"</span>
         </h1>
       )}
-      {/* {isError && <h1>There is some error</h1>}
-      {isLoading && <h1>Loading Data</h1>}
+      {isError && <h1>There is some error</h1>}
+      {isLoading && <h1 className="text-center">Loading Data</h1>}
       <div className="w-[90%] mx-[5%] grid gap-5 grid-cols-1 sm:grid-cols-2 md:grid-cols-3">
-        {data.library?.map((note: any) => (
-          <Link key={note.id} href={`/notes/${note.id}`}>
-            <CardView {...note} />
-          </Link>
+        {data?.map((capsule: any) => (
+          <CardView {...capsule} />
         ))}
-      </div> */}
-
-      {/* {!isLoading && data.totalPages > 1 && (
-        <PaginationButton totalPages={data.totalPages} {...props} />
-      )} */}
+      </div>
     </>
   );
 };

@@ -1,5 +1,6 @@
 import { SearchBarContainer } from "./features/searchbar/searchbar-container";
 import { CardView } from "./features/card/card-view";
+import { Button } from "./ui/button";
 import {
   Pagination,
   PaginationContent,
@@ -28,4 +29,5 @@ export {
   CardDescription,
   CardHeader,
   CardTitle,
+  Button,
 };
