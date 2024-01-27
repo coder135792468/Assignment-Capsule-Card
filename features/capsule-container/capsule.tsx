@@ -8,7 +8,7 @@ import {
 } from "@/store/index";
 import { PaginationButton } from "../index";
 
-export const Capsule = ({ ...props }) => {
+export const Capsule = ({ ...props }: any) => {
   const CAPSULE_SIZE = 2;
   const [search, setSearch] = useState<any>({
     limit: CAPSULE_SIZE,
